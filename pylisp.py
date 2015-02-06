@@ -42,22 +42,41 @@ def build_table():
     import math, operator as op
     __table.update(vars(math))
     __table.update({
-        '+': op.add, '-': op.sub, '*': op.mul, '/': op.div, '**': pow})
+        '+': op.add, '-': op.sub, '*': op.mul, '/': op.div, '**': pow,
+        '<': op.lt, '>': op.gt, '<=': op.le, '>=': op.ge, '=': op.eq})
     
     __table.update({
         'fwrite': lambda f, s: open(f, 'w').write(s),
         'fread': lambda f: open(f).read(),
-        'print': _print, 'import': _import, 
         'list': lambda *x: list(x),
         'set': lambda *x: set(x),
         'dict': lambda x,y: dict(zip(x,y)), 
+        'zero?': lambda x: x == 0, 
+        'print': _print, 'import': _import, 
         'map': map,
         'reduce': reduce,
         'max': max,
         'min': min,
         'abs': abs,
-        'length': len, 
-        'zero?': lambda x: x == 0
+        'len': len, 
+        'append':  op.add,  
+        'apply':   apply,
+        'begin':   lambda *x: x[-1],
+        'first':     lambda x: x[0],
+        'rest':     lambda x: x[1:], 
+        'cons':    lambda x,y: [x] + y,
+        'eq?':     op.is_, 
+        'equal?':  op.eq, 
+        'len':  len, 
+        'list?':   lambda x: isinstance(x,list), 
+        'max':     max,
+        'min':     min,
+        'not':     op.not_,
+        'null?':   lambda x: x == [], 
+        'number?': lambda x: isinstance(x, Number),   
+        'procedure?': callable,
+        'round':   round,
+        'symbol?': lambda x: isinstance(x, Symbol),
         })
 
 build_table()
