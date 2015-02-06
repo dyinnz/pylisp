@@ -124,6 +124,5 @@ class Lamfn:
         self.var, self.sub, self.local = var, sub, local
     def __call__(self, *args):
         local = self.local.copy()
-        for i,v in enumerate(self.var):
-            local[v] = args[i]
+        local.update(dict(zip(self.var, args)))
         return leval(self.sub, local)
