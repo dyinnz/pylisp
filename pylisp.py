@@ -98,6 +98,9 @@ def _disassoc(d, k):
     nd = d.copy(); nd.pop(k)
     return nd
 
+def _call(obj, fun, *args):
+    return getattr(obj, fun, *args)
+
 def build_table():
     import math, operator as op
     __table.update(vars(math))
@@ -109,7 +112,8 @@ def build_table():
         'int': int, 'str': str, 'float': float,
         'nth': lambda x, n: x[n],
         'get': _get, 'assoc': _assoc, 'disassoc': _disassoc,
-        'pair': lambda x, y: (x, y)})
+        'pair': lambda x, y: (x, y),
+        '.': _call})
 
     __table.update({
         'fwrite': lambda f, s: open(f, 'w').write(s),
@@ -160,7 +164,8 @@ def leval(exp, local={}):
         elif exp in local: return local[exp]
         elif exp in __table: return __table[exp]
         elif '.' in exp: return find_symbol(__table, exp)
-        else: raise NameError('No such name "%s"!'% (exp,))
+        #else: raise NameError('No such name "%s"!'% (exp,))
+        return exp
     elif not isinstance(exp, list):
         return exp
     first = exp[0]
@@ -170,7 +175,8 @@ def leval(exp, local={}):
         (_, test, t, f) = exp
         return leval(t, local) if leval(test, local) else leval(f, local)
     elif first == 'def':
-        (_, var, sub) = exp[0],exp[1],exp[2:]
+        #(_, var, sub) = exp[0],exp[1],exp[2:]
+        (_, var, sub) = exp
         __table[var] = leval(sub, local)
     elif first == 'do':
         l = local.copy()
