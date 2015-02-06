@@ -147,3 +147,23 @@ class Lamfn:
         local = self.local.copy()
         local.update(dict(zip(self.var, args)))
         return leval(self.sub, local)
+
+def interpret(filename):
+    source = ''
+    for line in open(filename).readlines():
+        source += line + ' '
+        paren = check_paren(source)
+        if paren <= 0:
+            if paren == 0:
+                try: leval(parse(source))
+                except Exception, e: print e
+            elif paren < 0:
+                print 'Error: unmatched parentheis!'
+            source = ''
+
+if __name__ == '__main__':
+    import sys
+    argstr = sys.argv[1]
+    if argstr == '-repl': repl() 
+    else :interpret(sys.argv[1])
+
