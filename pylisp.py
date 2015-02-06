@@ -4,12 +4,21 @@ Date: 2015/02/06-07
 Description: Hust.UniqueStudio.Hackday
 '''
 
-import calc
-
 __table = {}
 __specail_forms = {}
 
+from calc import calc
+
 # parse
+
+def get_value(token):
+    token = atom(token)
+    if isinstance(token, int) or isinstance(token, float):
+        return token
+    elif len(token) > 2 and token[0]=='\"' and token[-1]=='\"':
+        return token[1:-1]
+    else: 
+        return __table[token]
 
 def atom(token):
     try: return int(token)
@@ -25,12 +34,12 @@ def get_tokens(source):
     token = ''
     while pos < len(source):
         c = source[pos]
-        if c == '(' or c == ')':
+        if c in ['(', ')', '{', '}']:
             if len(token) != 0: tokens.append(token)
             token = ''
             tokens.append(c)
         elif c == ' ' and not is_str:
-            tokens.append(token)
+            if len(token) != 0: tokens.append(token)
             token = ''
         elif c == '\"':
             is_str = not is_str
@@ -43,16 +52,28 @@ def get_tokens(source):
 def parse(source):
     stack = [[]]
     try: 
-        for token in get_tokens(source):
+        tokens = get_tokens(source)
+        pos = 0
+        while pos < len(tokens):
+            token = tokens[pos]
             if '(' == token: stack.append([])
             elif ')' == token: 
                 exp = stack.pop()
                 if len(exp) > 0: stack[-1].append(exp)
                 else: raise SyntaxError('Empty list!')
-            else: stack[-1].append(atom(token))
+            elif '{' == token:
+                d = {}
+                pos += 1
+                while tokens[pos] != '}':
+                    d[get_value(tokens[pos])] = get_value(tokens[pos+1])
+                    pos += 2
+                stack[-1].append(d)
+            else: 
+                stack[-1].append(atom(token))
+            pos += 1
         return stack.pop()[0]
-    except:
-        raise SyntaxError('Syntax Error')
+    except Exception, e:
+        print 'Error:', e
 
 # built-in function
 
@@ -60,51 +81,87 @@ def _import(module, name=None):
     if not name: name = module
     __table.update({name: __import__(module)})
 
-def _print(x):
-    print x
+def _print(*l):
+    for x in l: print x,
+    print ''
+
+def _read(prompt=''):
+    return raw_input(prompt)
+
+def _get(d, k, default=None):
+    if default: return d.get(k, default)
+    else: return d[k]
+
+def _assoc(d, k, v):
+    nd = d.copy(); nd[k] = v
+    return nd
+
+def _disassoc(d, k):
+    nd = d.copy(); nd.pop(k)
+    return nd
+
+def _call(obj, fun, *args):
+    return getattr(obj, fun, *args)
 
 def build_table():
     import math, operator as op
     calc = Calculate()
     __table.update(vars(math))
     __table.update({
-        '+': calc.add, '-': calc.sub, '*': calc.mul, '/': calc.div, '**': pow,
-        '<': calc.lt, '>': calc.gt, '<=': calc.le, '>=': calc.ge, '=': calc.eq})
-    
+        '+': op.add, '-': op.sub, '*': op.mul, '/': op.div, '**': pow,
+        '<': op.lt, '>': op.gt, '<=': op.le, '>=': op.ge, '=': op.eq})
+
     __table.update({
         'quotient': lambda a, b: a // b,
         'remainder':calc.rem,
         'modulo':   lambda a, b: a % b,
         'gcd':      calc.gcd,
         'lcm':      calc.lcm,
+        'int': int, 'str': str, 'float': float,
+        'nth': lambda x, n: x[n],
+        'get': _get, 'assoc': _assoc, 'disassoc': _disassoc,
+        'pair': lambda x, y: (x, y),
+        '.': _call})
 
-        'fwrite':   lambda f, s: open(f, 'w').write(s),
-        'fread':    lambda f: open(f).read(),
-        'expt':     lambda x, y: x ** y,
-        'list':     lambda *x: list(x),
-        'set':      lambda *x: set(x),
-        'dict':     lambda x, y: dict(zip(x, y)), 
-        'zero?':    lambda x: x == 0, 
-        'print':    _print, 'import': _import, 
-        'map':      map,
-        'reduce':   reduce,
-        'max':      max,
-        'min':      min,
-        'abs':      abs,
-        'len':      len, 
-        'append':   op.add,  
-        'apply':    apply,
-        'begin':    lambda *x: x[-1],
-        'first':    lambda x: x[0],
+    __table.update({
+        'fwrite': lambda f, s: open(f, 'w').write(s),
+        'fread': lambda f: open(f).read(),
+        'list': lambda *x: list(x),
+        'set': lambda *x: set(x),
+        'dict': lambda x,y: dict(zip(x,y)), 
+        'zero?': lambda x: x == 0, 
+        'read': _read, 'print': _print, 'import': _import, 
+        'map': map,
+        'reduce': reduce,
+        'max': max,
+        'min': min,
+        'abs': abs,
+        'len': len, 
+        'append':  op.add,  
+        'apply':   apply,
+        'begin':   lambda *x: x[-1],
+        'first':     lambda x: x[0],
+        'second': lambda x: x[1],
         'rest':     lambda x: x[1:], 
-        'cons':     lambda x, y: [x] + y,
-        'eq?':      op.is_, 
-        'equal?':   op.eq, 
-        'list?':    lambda x: isinstance(x, list), 
-        'max':      max,
-        'min':      min,
-        'not':      op.not_,
-        'null?':    lambda x: x == [], 
+        'last': lambda x: x[-1],
+        'cons':    lambda x,y: [x] + y,
+        'eq?':     op.is_, 
+        'equal?':  op.eq, 
+        'len':  len, 
+        'list?':   lambda x: isinstance(x,list), 
+        'max':     max,
+        'min':     min,
+        'not':     op.not_,
+        'null?':   lambda x: x == [], 
+        'number?': lambda x: isinstance(x, int) and isinstance(x, float),   
+        'procedure?': callable,
+        'round':   round,
+        'symbol?': lambda x: isinstance(x, str),
+        'reverse': lambda x: x[::-1],
+        '//': lambda a, b: a // b,
+        'remainder':calc.rem,
+        '%':   lambda a, b: a % b,
+        'expt':     lambda x, y: x ** y,
         'number?':  lambda x: isinstance(x, int) or isinstance(x, float),  
         'complex?': lambda x: isinstance(x, complex),
         'boolean?': lambda x: isinstance(x, bool),
@@ -116,9 +173,6 @@ def build_table():
         'odd?':     lambda x: x % 2 == 1,
         'even?':    lambda x: x % 2 == 0,
 
-        'procedure?': callable,
-        'round':    round,
-        'symbol?':  lambda x: isinstance(x, str),
         })
 
 build_table()
@@ -135,7 +189,8 @@ def leval(exp, local={}):
         elif exp in local: return local[exp]
         elif exp in __table: return __table[exp]
         elif '.' in exp: return find_symbol(__table, exp)
-        else: raise NameError('No such name!')
+        #else: raise NameError('No such name "%s"!'% (exp,))
+        return exp
     elif not isinstance(exp, list):
         return exp
     first = exp[0]
@@ -145,6 +200,7 @@ def leval(exp, local={}):
         (_, test, t, f) = exp
         return leval(t, local) if leval(test, local) else leval(f, local)
     elif first == 'def':
+        #(_, var, sub) = exp[0],exp[1],exp[2:]
         (_, var, sub) = exp
         __table[var] = leval(sub, local)
     elif first == 'do':
@@ -153,7 +209,7 @@ def leval(exp, local={}):
         (_, v, t) = exp
         for var in v:
             (var, val, update) = var
-            l[var]=val
+            l[var] = val
             updates[var] = update
         (test, res) = t
         while not leval(test,l):
@@ -163,6 +219,14 @@ def leval(exp, local={}):
     elif first == 'fn':
         (_, var, sub) = exp
         return Lamfn(var, sub, local)
+    elif len(exp) == 2:
+        try:
+            if isinstance(exp[0]) == dict:
+                return exp[0][exp[1]]
+            elif isinstance(exp[1]) == dict:
+                return exp[1][exp[0]]
+        except Exception, e:
+            print e
     else:
         fn = leval(first, local)
         args = [leval(sub, local) for sub in exp[1:]]
@@ -203,10 +267,16 @@ class Lamfn:
         local.update(dict(zip(self.var, args)))
         return leval(self.sub, local)
 
+def cut_comment(line):
+    pos = line.find(';')
+    return line if pos==-1 else line[:pos]
+
 def interpret(filename):
     source = ''
     for line in open(filename).readlines():
-        source += line + ' '
+        source += cut_comment(line) + ' '
+        source = source.strip()
+        if len(source) == 0: continue
         paren = check_paren(source)
         if paren <= 0:
             if paren == 0:
