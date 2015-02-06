@@ -47,7 +47,25 @@ def build_table():
     __table.update({
         'fwrite': lambda f, s: open(f, 'w').write(s),
         'fread': lambda f: open(f).read(),
+<<<<<<< HEAD
         'print': _print, 'import': _import})
+=======
+        'import': _import})
+    __table.update({
+        'list': lambda *x: list(x),
+        'set': lambda *x: set(x),
+        'dict': lambda x,y: dict(zip(x,y))})
+    __table.update({
+        'map': map,
+        'reduce': reduce,
+        'max': max,
+        'min': min,
+        'abs': abs,
+        'length': len})
+    __table.update({
+        'zero?': lambda x: x == 0
+        })
+>>>>>>> 8273a85bdf1019d18f84ea792e09da0369d802db
 
 build_table()
 
@@ -115,6 +133,5 @@ class Lamfn:
         self.var, self.sub, self.local = var, sub, local
     def __call__(self, *args):
         local = self.local.copy()
-        for i,v in enumerate(self.var):
-            local[v] = args[i]
+        local.update(dict(zip(self.var, args)))
         return leval(self.sub, local)
