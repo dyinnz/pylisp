@@ -43,6 +43,20 @@ def build_table():
         'fwrite': lambda f, s: open(f, 'w').write(s),
         'fread': lambda f: open(f).read(),
         'import': _import})
+    __table.update({
+        'list': lambda *x: list(x),
+        'set': lambda *x: set(x),
+        'dict': lambda x,y: dict(zip(x,y))})
+    __table.update({
+        'map': map,
+        'reduce': reduce,
+        'max': max,
+        'min': min,
+        'abs': abs,
+        'length': len})
+    __table.update({
+        'zero?': lambda x: x == 0
+        })
 
 build_table()
 
