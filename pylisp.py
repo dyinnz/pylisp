@@ -31,13 +31,18 @@ def parse(source):
 
 # built-in function
 
+def fread(f):
+    print open(f).read()
+    return open(f).read()
+
 def build_table():
     import operator as op
     __table.update({
         '+': op.add, '-': op.sub, '*': op.mul, '/': op.div})
     __table.update({
         'fwrite': lambda f, s: open(f, 'w').write(s),
-        'fread': lambda f: return open(f).read()})
+        #'fread': lambda f: open(f).read()})
+        'fread': fread})
 
 build_table()
 
@@ -63,6 +68,7 @@ def leval(exp, local={}):
     else:
         fn = leval(first, local)
         args = [leval(sub, local) for sub in exp[1:]]
+        print args
         return fn(*args)
 
 # repl
