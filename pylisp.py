@@ -6,11 +6,7 @@ Description: Hust.UniqueStudio.Hackday
 __table = {}
 __specail_forms = {}
 
-def build_table():
-    import operator as op
-    __table.update({
-        '+': op.add, '-': op.sub, '*': op.mul, '/': op.div})
-build_table()
+# parse
 
 def atom(token):
     try: return int(token)
@@ -33,6 +29,17 @@ def parse(source):
     except:
         raise SyntaxError('Syntax Error')
 
+# built-in function
+
+def build_table():
+    import operator as op
+    __table.update({
+        '+': op.add, '-': op.sub, '*': op.mul, '/': op.div})
+
+build_table()
+
+# eval
+
 def leval(exp, local={}):
     if isinstance(exp, str):
         if exp in local: return local[exp]
@@ -54,6 +61,8 @@ def leval(exp, local={}):
         fn = leval(first, local)
         args = [leval(sub, local) for sub in exp[1:]]
         return fn(*args)
+
+# repl
 
 def check_paren(source_in):
     paren = 0
