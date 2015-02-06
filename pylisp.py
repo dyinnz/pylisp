@@ -65,6 +65,7 @@ def _print(x):
 
 def build_table():
     import math, operator as op
+    calc = Calculate()
     __table.update(vars(math))
     __table.update({
         '+': calc.add, '-': calc.sub, '*': calc.mul, '/': calc.div, '**': pow,
@@ -74,8 +75,8 @@ def build_table():
         'quotient': lambda a, b: a // b,
         'remainder':calc.rem,
         'modulo':   lambda a, b: a % b,
-        'gcd':      calc.gcd
-        'lcm':      calc.lcm
+        'gcd':      calc.gcd,
+        'lcm':      calc.lcm,
 
         'fwrite':   lambda f, s: open(f, 'w').write(s),
         'fread':    lambda f: open(f).read(),
