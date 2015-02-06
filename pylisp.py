@@ -61,12 +61,18 @@ def _import(module, name=None):
 def _print(x):
     print x
 
+def _read(prompt):
+    return raw_input(prompt)
+
 def build_table():
     import math, operator as op
     __table.update(vars(math))
     __table.update({
         '+': op.add, '-': op.sub, '*': op.mul, '/': op.div, '**': pow,
         '<': op.lt, '>': op.gt, '<=': op.le, '>=': op.ge, '=': op.eq})
+
+    __table.update({
+        'read': _read})
     
     __table.update({
         'fwrite': lambda f, s: open(f, 'w').write(s),
@@ -75,7 +81,7 @@ def build_table():
         'set': lambda *x: set(x),
         'dict': lambda x,y: dict(zip(x,y)), 
         'zero?': lambda x: x == 0, 
-        'print': _print, 'import': _import, 
+        'read': _read, 'print': _print, 'import': _import, 
         'map': map,
         'reduce': reduce,
         'max': max,
@@ -87,6 +93,7 @@ def build_table():
         'begin':   lambda *x: x[-1],
         'first':     lambda x: x[0],
         'rest':     lambda x: x[1:], 
+        'last': lambda x: x[-1],
         'cons':    lambda x,y: [x] + y,
         'eq?':     op.is_, 
         'equal?':  op.eq, 
