@@ -16,10 +16,32 @@ def atom(token):
         except ValueError:
             return token # the same as str(token)
 
+def get_tokens(source):
+    tokens = []
+    pos = 0
+    is_str = False
+    token = ''
+    while pos < len(source):
+        c = source[pos]
+        if c == '(' or c == ')':
+            if len(token) != 0: tokens.append(token)
+            token = ''
+            tokens.append(c)
+        elif c == ' ' and not is_str:
+            tokens.append(token)
+            token = ''
+        elif c == '\"':
+            is_str = not is_str
+            token += c
+        else:
+            token += c
+        pos += 1
+    return tokens
+
 def parse(source):
     stack = [[]]
     try: 
-        for token in source.replace('(',' ( ').replace(')',' ) ').split():
+        for token in get_tokens(source):
             if '(' == token: stack.append([])
             elif ')' == token: 
                 exp = stack.pop()
