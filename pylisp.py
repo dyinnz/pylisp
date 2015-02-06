@@ -234,13 +234,16 @@ class Lamfn:
         local.update(dict(zip(self.var, args)))
         return leval(self.sub, local)
 
+def cut_comment(line):
+    pos = line.find(';')
+    return line if pos==-1 else line[:pos]
+
 def interpret(filename):
     source = ''
     for line in open(filename).readlines():
-        source += line + ' '
+        source += cut_comment(line) + ' '
         source = source.strip()
         if len(source) == 0: continue
-        print source
         paren = check_paren(source)
         if paren <= 0:
             if paren == 0:
