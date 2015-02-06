@@ -133,6 +133,7 @@ def build_table():
         'apply':   apply,
         'begin':   lambda *x: x[-1],
         'first':     lambda x: x[0],
+        'second': lambda x: x[1]
         'rest':     lambda x: x[1:], 
         'last': lambda x: x[-1],
         'cons':    lambda x,y: [x] + y,
@@ -148,6 +149,7 @@ def build_table():
         'procedure?': callable,
         'round':   round,
         'symbol?': lambda x: isinstance(x, str),
+        'reverse': lambda x: x[::-1]
         })
 
 build_table()
