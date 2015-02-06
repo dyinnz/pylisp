@@ -31,18 +31,13 @@ def parse(source):
 
 # built-in function
 
-def fread(f):
-    print open(f).read()
-    return open(f).read()
-
 def build_table():
     import operator as op
     __table.update({
         '+': op.add, '-': op.sub, '*': op.mul, '/': op.div})
     __table.update({
         'fwrite': lambda f, s: open(f, 'w').write(s),
-        #'fread': lambda f: open(f).read()})
-        'fread': fread})
+        'fread': lambda f: open(f).read()})
 
 build_table()
 
@@ -51,7 +46,9 @@ build_table()
 def leval(exp, local={}):
     if isinstance(exp, str):
         if exp in local: return local[exp]
-        else: return __table[exp]
+        elif exp in __table: return __table[exp]
+        elif len(exp) > 2 and exp[0]=='\"' and exp[-1]=='\"': return exp[1:-1]
+        else : raise NameError('No such name!')
     elif not isinstance(exp, list):
         return exp
     first = exp[0]
