@@ -35,6 +35,9 @@ def build_table():
     import operator as op
     __table.update({
         '+': op.add, '-': op.sub, '*': op.mul, '/': op.div})
+    __table.update({
+        'fwrite': lambda f, s: open(f, 'w').write(s),
+        'fread': lambda f: return open(f).read()})
 
 build_table()
 
