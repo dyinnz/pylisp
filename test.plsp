@@ -1,7 +1,7 @@
-(import "numpy")
-(numpy.ones 5)
-(+ 1 2)
-(def m (dict (list 1) (list 2)))
-(print (assoc m 2 "hehe"))
-(print (disassoc m 1))
-(print m)
+(def facto (n)
+  (if (= n 1)
+      1
+      (* n (facto (- n 1)))))
+
+
+(print (facto 5))
