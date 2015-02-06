@@ -51,7 +51,7 @@ def leval(exp, local={}):
         return exp
     first = exp[0]
     if first == 'quote' or first == '\'':
-        return x[1:]
+        return exp[1:]
     elif first == 'if':
         (_, test, t, f) = exp
         return leval(t, local) if leval(test, local) else leval(f, local)
@@ -59,7 +59,8 @@ def leval(exp, local={}):
         (_, var, sub) = exp
         __table[var] = leval(sub, local)
     elif first == 'fn':
-        pass
+        (_, var, sub) = exp
+        return Lamfn(var, sub, local)
     else:
         fn = leval(first, local)
         args = [leval(sub, local) for sub in exp[1:]]
@@ -93,3 +94,11 @@ def repl(prompt='pylisp'):
         else:
             pro = '.'*len(prompt[:-2]) + '=>' + ' '*paren*2
 
+class Lamfn:
+    def __init__(self, var, sub, local):
+        self.var, self.sub, self.local = var, sub, local
+    def __call__(self, *args):
+        local = self.local.copy()
+        for i,v in enumerate(self.var):
+            local[v] = args[i]
+        return leval(self.sub, local)
