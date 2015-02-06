@@ -9,6 +9,15 @@ __specail_forms = {}
 
 # parse
 
+def get_value(token):
+    token = atom(token)
+    if isinstance(token, int) or isinstance(token, float):
+        return token
+    elif len(token) > 2 and token[0]=='\"' and token[-1]=='\"':
+        return token[1:-1]
+    else: 
+        return __table[token]
+
 def atom(token):
     try: return int(token)
     except ValueError:
@@ -23,7 +32,7 @@ def get_tokens(source):
     token = ''
     while pos < len(source):
         c = source[pos]
-        if c == '(' or c == ')':
+        if c in ['(', ')', '{', '}']:
             if len(token) != 0: tokens.append(token)
             token = ''
             tokens.append(c)
@@ -41,16 +50,28 @@ def get_tokens(source):
 def parse(source):
     stack = [[]]
     try: 
-        for token in get_tokens(source):
+        tokens = get_tokens(source)
+        pos = 0
+        while pos < len(tokens):
+            token = tokens[pos]
             if '(' == token: stack.append([])
             elif ')' == token: 
                 exp = stack.pop()
                 if len(exp) > 0: stack[-1].append(exp)
                 else: raise SyntaxError('Empty list!')
-            else: stack[-1].append(atom(token))
+            elif '{' == token:
+                d = {}
+                pos += 1
+                while tokens[pos] != '}':
+                    d[get_value(tokens[pos])] = get_value(tokens[pos+1])
+                    pos += 2
+                stack[-1].append(d)
+            else: 
+                stack[-1].append(atom(token))
+            pos += 1
         return stack.pop()[0]
-    except:
-        raise SyntaxError('Syntax Error')
+    except Exception, e:
+        print 'Error:', e
 
 # built-in function
 
