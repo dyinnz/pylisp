@@ -1,4 +1,4 @@
-class calc:
+class Calculate:
     def add(self, a, *b):
         ans = a
         for i in b:
