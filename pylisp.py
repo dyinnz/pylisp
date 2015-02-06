@@ -58,8 +58,9 @@ def _import(module, name=None):
     if not name: name = module
     __table.update({name: __import__(module)})
 
-def _print(x):
-    print x
+def _print(*l):
+    for x in l: print x,
+    print ''
 
 def _read(prompt=''):
     return raw_input(prompt)
