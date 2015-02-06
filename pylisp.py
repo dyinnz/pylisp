@@ -105,6 +105,19 @@ def leval(exp, local={}):
     elif first == 'def':
         (_, var, sub) = exp
         __table[var] = leval(sub, local)
+    elif first == 'do':
+        l = local.copy()
+        updates = {}
+        (_, v, t) = exp
+        for var in v:
+            (var, val, update) = var
+            l[var]=val
+            updates[var] = update
+        (test, res) = t
+        while not leval(test,l):
+            for k in updates:
+                l[k] = leval(updates[k], l)
+        return leval(res, l)
     elif first == 'fn':
         (_, var, sub) = exp
         return Lamfn(var, sub, local)
