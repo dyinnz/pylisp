@@ -10,6 +10,7 @@ def build_table():
     import operator as op
     __table.update({
         '+': op.add, '-': op.sub, '*': op.mul, '/': op.div})
+build_table()
 
 def atom(token):
     try: return int(token)
@@ -51,4 +52,29 @@ def leval(exp, local={}):
         args = [leval(sub, local) for sub in exp[1:]]
         return fn(*args)
 
-build_table()
+def check_paren(source_in):
+    paren = 0
+    for c in source_in:
+        if c == '(': paren += 1
+        elif c == ')': paren -= 1
+    return paren
+
+def repl(prompt='pylisp'):
+    prompt += '=>'
+    pro = prompt
+    source = ''
+    while True: 
+        source += raw_input(pro) + ' '
+        paren = check_paren(source)
+        if paren <= 0:
+            if paren == 0:
+                print parse(source)
+                try : print leval(parse(source))
+                except Exception, e: print e
+            elif paren < 0:
+                print 'Error: unmacthed parentheis!'
+            pro = prompt
+            source = ''
+        else:
+            pro = '.'*len(prompt[:-2]) + '=>' + ' '*paren*2
+
