@@ -1,6 +1,20 @@
-(loop (x 5) 
-    (if (= x 0) 
-        x 
-        (recur x (eval 
-                    (print x) 
-                    (- x 1)))))
+(import "numpy" "np")
+(import "matplotlib")
+(import "matplotlib.pyplot" "plt")
+(import "prediction" "pre")
+
+(def train_pair (pre.load_dataset "train"))
+(def train_mat (first train_pair))
+(def labels (last train_pair))
+(def test_mat (first (pre.load_dataset "test")))
+
+(def yhat (pre.lwlr_test
+            (np.mat test_mat)
+            (np.mat train_mat)
+            (np.mat labels)
+            1.0 ))
+
+(def solution (pre.analyze_result yhat))
+(def ax ((. (plt.figure) add_subplot) 111))
+((. ax scatter) (pre.getnth test_mat 1) solution)
+((. plt show)) 

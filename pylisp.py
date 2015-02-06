@@ -7,7 +7,7 @@ Description: Hust.UniqueStudio.Hackday
 __table = {}
 __specail_forms = {}
 
-from calc import calc
+from calc import Calculate
 
 # parse
 
@@ -78,8 +78,11 @@ def parse(source):
 # built-in function
 
 def _import(module, name=None):
-    if not name: name = module
-    __table.update({name: __import__(module)})
+    if not name: 
+        name = module
+    impstr = 'import %s as %s' % (module, name)
+    exec impstr
+    __table.update({name: eval(name)})
 
 def _print(*l):
     for x in l: print x,
@@ -105,12 +108,18 @@ def _call(obj, fun, *args):
 
 def build_table():
     import math, operator as op
+    calc = Calculate()
     __table.update(vars(math))
     __table.update({
         '+': op.add, '-': op.sub, '*': op.mul, '/': op.div, '**': pow,
         '<': op.lt, '>': op.gt, '<=': op.le, '>=': op.ge, '=': op.eq})
 
     __table.update({
+        'quotient': lambda a, b: a // b,
+        'remainder':calc.rem,
+        'modulo':   lambda a, b: a % b,
+        'gcd':      calc.gcd,
+        'lcm':      calc.lcm,
         'int': int, 'str': str, 'float': float,
         'nth': lambda x, n: x[n],
         'get': _get, 'assoc': _assoc, 'disassoc': _disassoc,
@@ -155,8 +164,6 @@ def build_table():
         '//': lambda a, b: a // b,
         'remainder':calc.rem,
         '%':   lambda a, b: a % b,
-        'gcd':      calc.gcd,
-        'lcm':      calc.lcm,
         'expt':     lambda x, y: x ** y,
         'number?':  lambda x: isinstance(x, int) or isinstance(x, float),  
         'complex?': lambda x: isinstance(x, complex),
@@ -183,7 +190,8 @@ def leval(exp, local={}):
     if isinstance(exp, str):
         if len(exp) > 2 and exp[0]=='\"' and exp[-1]=='\"': return exp[1:-1]
         elif exp in local: return local[exp]
-        elif exp in __table: return __table[exp]
+        elif exp in __table: 
+            return __table[exp]
         elif '.' in exp: return find_symbol(__table, exp)
         #else: raise NameError('No such name "%s"!'% (exp,))
         return exp
@@ -238,7 +246,7 @@ def leval(exp, local={}):
     elif first == 'eval':
         [leval(sub, local) for sub in exp[1:-1]]
         return leval(exp[-1])
-    else: 
+    else:
         fn = leval(first, local)
         args = [leval(sub, local) for sub in exp[1:]]
         return fn(*args)
