@@ -1,7 +1,6 @@
-(import "numpy")
-(numpy.ones 5)
-(+ 1 2)
-(def m (dict (list 1) (list 2)))
-(print (assoc m 2 "hehe"))
-(print (disassoc m 1))
-(print m)
+(loop (x 5) 
+    (if (= x 0) 
+        x 
+        (recur x (eval 
+                    (print x) 
+                    (- x 1)))))

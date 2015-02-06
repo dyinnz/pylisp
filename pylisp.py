@@ -201,8 +201,12 @@ def leval(exp, local={}):
         return leval(t, local) if leval(test, local) else leval(f, local)
     elif first == 'def':
         #(_, var, sub) = exp[0],exp[1],exp[2:]
-        (_, var, sub) = exp
-        __table[var] = leval(sub, local)
+        if(len(exp)==3):
+            (_, var, sub) = exp
+            __table[var] = leval(sub, local)
+        elif(len(exp)==4):
+            (_, var, fnvar, sub) = exp
+            __table[var] = Lamfn(fnvar, sub, local)
     elif first == 'do':
         l = local.copy()
         updates = {}
@@ -219,6 +223,25 @@ def leval(exp, local={}):
     elif first == 'fn':
         (_, var, sub) = exp
         return Lamfn(var, sub, local)
+    elif first == 'let':
+        (_, var, sub) = exp[0], exp[1], exp[2:]
+        l = local.copy()
+        for v,a in var:
+            l[v] = a;
+        for s in sub:
+            leval(s, l)
+    elif first == 'loop':
+        (_, init, cond) = exp
+        local[init[0]] = leval(init[1])
+        (_, test, out, recur) = cond
+        if recur[0] != 'recur':
+            raise 'Syntax Error'
+        while not leval(test):
+            local[recur[1]] = leval(recur[2])
+        return leval(out, local)
+    elif first == 'eval':
+        [leval(sub, local) for sub in exp[1:-1]]
+        return leval(exp[-1])
     elif len(exp) == 2:
         try:
             if isinstance(exp[0]) == dict:
@@ -288,7 +311,8 @@ def interpret(filename):
 
 if __name__ == '__main__':
     import sys
-    argstr = sys.argv[1]
-    if argstr == '-repl': repl() 
-    else :interpret(sys.argv[1])
+    if len(sys.argv) >= 2:
+        argstr = sys.argv[1]
+        if argstr == '-repl': repl() 
+        else :interpret(sys.argv[1])
 
