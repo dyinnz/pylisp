@@ -150,6 +150,23 @@ def build_table():
         'round':   round,
         'symbol?': lambda x: isinstance(x, str),
         'reverse': lambda x: x[::-1]
+        '//': lambda a, b: a // b,
+        'remainder':calc.rem,
+        '%':   lambda a, b: a % b,
+        'gcd':      calc.gcd
+        'lcm':      calc.lcm
+        'expt':     lambda x, y: x ** y,
+        'number?':  lambda x: isinstance(x, int) or isinstance(x, float),  
+        'complex?': lambda x: isinstance(x, complex),
+        'boolean?': lambda x: isinstance(x, bool),
+        'rational?':lambda x: isinstance(x, float),
+        'integer?': lambda x: isinstance(x, int),
+        'zero?':    lambda x: x == 0,
+        'positive?':lambda x: x > 0,
+        'negative?':lambda x: x < 0,
+        'odd?':     lambda x: x % 2 == 1,
+        'even?':    lambda x: x % 2 == 0,
+
         })
 
 build_table()
