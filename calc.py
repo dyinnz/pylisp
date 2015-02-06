@@ -29,7 +29,7 @@ class calc:
                 return False
         return True
 
-    def gt:(self, a, *b):
+    def gt(self, a, *b):
         k = a
         for i in b:
             if k > i:
@@ -38,7 +38,7 @@ class calc:
                 return False
         return True
 
-    def lt:(self, a, *b):
+    def lt(self, a, *b):
         k = a
         for i in b:
             if k < i:
@@ -52,7 +52,7 @@ class calc:
         for i in b:
             if k <= i:
                 k = i
-            else
+            else:
                 return False
         return True
 
@@ -61,7 +61,7 @@ class calc:
         for i in b:
             if k >= i:
                 k = i
-            else
+            else:
                 return False
         return True
   
@@ -81,5 +81,5 @@ class calc:
 
         return a
 
-    def lcm(self, a, b)
+    def lcm(self, a, b):
         return a * b / self.gcd(a, b)

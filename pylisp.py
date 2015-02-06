@@ -7,6 +7,8 @@ Description: Hust.UniqueStudio.Hackday
 __table = {}
 __specail_forms = {}
 
+from calc import calc
+
 # parse
 
 def get_value(token):
@@ -133,7 +135,7 @@ def build_table():
         'apply':   apply,
         'begin':   lambda *x: x[-1],
         'first':     lambda x: x[0],
-        'second': lambda x: x[1]
+        'second': lambda x: x[1],
         'rest':     lambda x: x[1:], 
         'last': lambda x: x[-1],
         'cons':    lambda x,y: [x] + y,
@@ -149,12 +151,12 @@ def build_table():
         'procedure?': callable,
         'round':   round,
         'symbol?': lambda x: isinstance(x, str),
-        'reverse': lambda x: x[::-1]
+        'reverse': lambda x: x[::-1],
         '//': lambda a, b: a // b,
         'remainder':calc.rem,
         '%':   lambda a, b: a % b,
-        'gcd':      calc.gcd
-        'lcm':      calc.lcm
+        'gcd':      calc.gcd,
+        'lcm':      calc.lcm,
         'expt':     lambda x, y: x ** y,
         'number?':  lambda x: isinstance(x, int) or isinstance(x, float),  
         'complex?': lambda x: isinstance(x, complex),
