@@ -36,7 +36,6 @@ def get_tokens(source):
         else:
             token += c
         pos += 1
-    print tokens
     return tokens
 
 def parse(source):
@@ -65,6 +64,18 @@ def _print(x):
 def _read(prompt=''):
     return raw_input(prompt)
 
+def _get(d, k, default=None):
+    if default: return d.get(k, default)
+    else: return d[k]
+
+def _assoc(d, k, v):
+    nd = d.copy(); nd[k] = v
+    return nd
+
+def _disassoc(d, k):
+    nd = d.copy(); nd.pop(k)
+    return nd
+
 def build_table():
     import math, operator as op
     __table.update(vars(math))
@@ -73,7 +84,10 @@ def build_table():
         '<': op.lt, '>': op.gt, '<=': op.le, '>=': op.ge, '=': op.eq})
 
     __table.update({
-        'int': int, 'str': str, 'float': float,})
+        'int': int, 'str': str, 'float': float,
+        'nth': lambda x, n: x[n],
+        'get': _get, 'assoc': _assoc, 'disassoc': _disassoc,
+        'pair': lambda x, y: (x, y)})
 
     __table.update({
         'fwrite': lambda f, s: open(f, 'w').write(s),
