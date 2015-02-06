@@ -197,8 +197,12 @@ def leval(exp, local={}):
         return leval(t, local) if leval(test, local) else leval(f, local)
     elif first == 'def':
         #(_, var, sub) = exp[0],exp[1],exp[2:]
-        (_, var, sub) = exp
-        __table[var] = leval(sub, local)
+        if(len(exp)==3):
+            (_, var, sub) = exp
+            __table[var] = leval(sub, local)
+        elif(len(exp)==4):
+            (_, var, fnvar, sub) = exp
+            __table[var] = Lamfn(fnvar, sub, local)
     elif first == 'do':
         l = local.copy()
         updates = {}
@@ -215,6 +219,13 @@ def leval(exp, local={}):
     elif first == 'fn':
         (_, var, sub) = exp
         return Lamfn(var, sub, local)
+    elif first == 'let':
+        (_, var, sub) = exp
+        l = local.copy()
+        for v,a in var:
+            l[v] = a;
+        leval(sub, l)
+
     else:
         fn = leval(first, local)
         args = [leval(sub, local) for sub in exp[1:]]
