@@ -1,7 +1,6 @@
-(def facto (n)
-  (if (= n 1)
-      1
-      (* n (facto (- n 1)))))
-
-
-(print (facto 5))
+(loop (x 5) 
+    (if (= x 0) 
+        x 
+        (recur x (eval 
+                    (print x) 
+                    (- x 1)))))

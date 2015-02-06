@@ -226,8 +226,19 @@ def leval(exp, local={}):
             l[v] = a;
         for s in sub:
             leval(s, l)
-
-    else:
+    elif first == 'loop':
+        (_, init, cond) = exp
+        local[init[0]] = leval(init[1])
+        (_, test, out, recur) = cond
+        if recur[0] != 'recur':
+            raise 'Syntax Error'
+        while not leval(test):
+            local[recur[1]] = leval(recur[2])
+        return leval(out, local)
+    elif first == 'eval':
+        [leval(sub, local) for sub in exp[1:-1]]
+        return leval(exp[-1])
+    else: 
         fn = leval(first, local)
         args = [leval(sub, local) for sub in exp[1:]]
         return fn(*args)
@@ -288,7 +299,8 @@ def interpret(filename):
 
 if __name__ == '__main__':
     import sys
-    argstr = sys.argv[1]
-    if argstr == '-repl': repl() 
-    else :interpret(sys.argv[1])
+    if len(sys.argv) >= 2:
+        argstr = sys.argv[1]
+        if argstr == '-repl': repl() 
+        else :interpret(sys.argv[1])
 
