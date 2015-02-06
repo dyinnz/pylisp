@@ -96,10 +96,10 @@ def build_table():
         'min':     min,
         'not':     op.not_,
         'null?':   lambda x: x == [], 
-        'number?': lambda x: isinstance(x, Number),   
+        'number?': lambda x: isinstance(x, int) and isinstance(x, float),   
         'procedure?': callable,
         'round':   round,
-        'symbol?': lambda x: isinstance(x, Symbol),
+        'symbol?': lambda x: isinstance(x, str),
         })
 
 build_table()
