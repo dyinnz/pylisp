@@ -24,7 +24,10 @@ def parse(source):
     try: 
         for token in source.replace('(',' ( ').replace(')',' ) ').split():
             if '(' == token: stack.append([])
-            elif ')' == token: stack[-2].append(stack.pop())
+            elif ')' == token: 
+                exp = stack.pop()
+                if len(exp) > 0: stack[-1].append(exp)
+                else: raise SyntaxError('Empty list!')
             else: stack[-1].append(atom(token))
         return stack.pop()[0]
     except:
