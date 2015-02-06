@@ -47,25 +47,18 @@ def build_table():
     __table.update({
         'fwrite': lambda f, s: open(f, 'w').write(s),
         'fread': lambda f: open(f).read(),
-<<<<<<< HEAD
-        'print': _print, 'import': _import})
-=======
-        'import': _import})
-    __table.update({
+        'print': _print, 'import': _import, 
         'list': lambda *x: list(x),
         'set': lambda *x: set(x),
-        'dict': lambda x,y: dict(zip(x,y))})
-    __table.update({
+        'dict': lambda x,y: dict(zip(x,y)), 
         'map': map,
         'reduce': reduce,
         'max': max,
         'min': min,
         'abs': abs,
-        'length': len})
-    __table.update({
+        'length': len, 
         'zero?': lambda x: x == 0
         })
->>>>>>> 8273a85bdf1019d18f84ea792e09da0369d802db
 
 build_table()
 
