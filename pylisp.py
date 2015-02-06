@@ -232,6 +232,9 @@ def interpret(filename):
     source = ''
     for line in open(filename).readlines():
         source += line + ' '
+        source = source.strip()
+        if len(source) == 0: continue
+        print source
         paren = check_paren(source)
         if paren <= 0:
             if paren == 0:
