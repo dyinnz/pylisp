@@ -35,14 +35,19 @@ def _import(module, name=None):
     if not name: name = module
     __table.update({name: __import__(module)})
 
+def _print(x):
+    print x
+
 def build_table():
-    import operator as op
+    import math, operator as op
+    __table.update(vars(math))
     __table.update({
-        '+': op.add, '-': op.sub, '*': op.mul, '/': op.div})
+        '+': op.add, '-': op.sub, '*': op.mul, '/': op.div, '**': pow})
+    
     __table.update({
         'fwrite': lambda f, s: open(f, 'w').write(s),
         'fread': lambda f: open(f).read(),
-        'import': _import})
+        'print': _print, 'import': _import})
 
 build_table()
 
