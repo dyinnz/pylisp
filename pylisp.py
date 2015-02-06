@@ -220,11 +220,12 @@ def leval(exp, local={}):
         (_, var, sub) = exp
         return Lamfn(var, sub, local)
     elif first == 'let':
-        (_, var, sub) = exp
+        (_, var, sub) = exp[0], exp[1], exp[2:]
         l = local.copy()
         for v,a in var:
             l[v] = a;
-        leval(sub, l)
+        for s in sub:
+            leval(s, l)
 
     else:
         fn = leval(first, local)
