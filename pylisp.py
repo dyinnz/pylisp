@@ -28,7 +28,7 @@ def get_tokens(source):
             token = ''
             tokens.append(c)
         elif c == ' ' and not is_str:
-            tokens.append(token)
+            if len(token) != 0: tokens.append(token)
             token = ''
         elif c == '\"':
             is_str = not is_str
@@ -36,6 +36,7 @@ def get_tokens(source):
         else:
             token += c
         pos += 1
+    print tokens
     return tokens
 
 def parse(source):
@@ -61,7 +62,7 @@ def _import(module, name=None):
 def _print(x):
     print x
 
-def _read(prompt):
+def _read(prompt=''):
     return raw_input(prompt)
 
 def build_table():
@@ -72,8 +73,8 @@ def build_table():
         '<': op.lt, '>': op.gt, '<=': op.le, '>=': op.ge, '=': op.eq})
 
     __table.update({
-        'read': _read})
-    
+        'int': int, 'str': str, 'float': float,})
+
     __table.update({
         'fwrite': lambda f, s: open(f, 'w').write(s),
         'fread': lambda f: open(f).read(),
