@@ -142,7 +142,7 @@ def leval(exp, local={}):
         (_, v, t) = exp
         for var in v:
             (var, val, update) = var
-            l[var]=val
+            l[var] = val
             updates[var] = update
         (test, res) = t
         while not leval(test,l):
