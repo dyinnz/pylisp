@@ -31,24 +31,34 @@ def parse(source):
 
 # built-in function
 
+def _import(module, name=None):
+    if not name: name = module
+    __table.update({name: __import__(module)})
+
 def build_table():
     import operator as op
     __table.update({
         '+': op.add, '-': op.sub, '*': op.mul, '/': op.div})
     __table.update({
         'fwrite': lambda f, s: open(f, 'w').write(s),
-        'fread': lambda f: open(f).read()})
+        'fread': lambda f: open(f).read(),
+        'import': _import})
 
 build_table()
 
 # eval
 
+def find_symbol(table, symbol):
+    pos = symbol.rfind('.')
+    return getattr(table[symbol[:pos]], symbol[pos+1:])
+
 def leval(exp, local={}):
     if isinstance(exp, str):
-        if exp in local: return local[exp]
+        if len(exp) > 2 and exp[0]=='\"' and exp[-1]=='\"': return exp[1:-1]
+        elif exp in local: return local[exp]
         elif exp in __table: return __table[exp]
-        elif len(exp) > 2 and exp[0]=='\"' and exp[-1]=='\"': return exp[1:-1]
-        else : raise NameError('No such name!')
+        elif '.' in exp: return find_symbol(__table, exp)
+        else: raise NameError('No such name!')
     elif not isinstance(exp, list):
         return exp
     first = exp[0]
@@ -66,7 +76,6 @@ def leval(exp, local={}):
     else:
         fn = leval(first, local)
         args = [leval(sub, local) for sub in exp[1:]]
-        print args
         return fn(*args)
 
 # repl
@@ -87,7 +96,6 @@ def repl(prompt='pylisp'):
         paren = check_paren(source)
         if paren <= 0:
             if paren == 0:
-                print parse(source)
                 try : print leval(parse(source))
                 except Exception, e: print e
             elif paren < 0:
