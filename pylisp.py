@@ -160,7 +160,7 @@ def leval(exp, local={}):
         elif exp in local: return local[exp]
         elif exp in __table: return __table[exp]
         elif '.' in exp: return find_symbol(__table, exp)
-        else: raise NameError('No such name!')
+        else: raise NameError('No such name "%s"!'% (exp,))
     elif not isinstance(exp, list):
         return exp
     first = exp[0]
@@ -170,7 +170,7 @@ def leval(exp, local={}):
         (_, test, t, f) = exp
         return leval(t, local) if leval(test, local) else leval(f, local)
     elif first == 'def':
-        (_, var, sub) = exp
+        (_, var, sub) = exp[0],exp[1],exp[2:]
         __table[var] = leval(sub, local)
     elif first == 'do':
         l = local.copy()
